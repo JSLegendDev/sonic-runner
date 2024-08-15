@@ -1,13 +1,7 @@
-import kaplay from "kaplay";
+import { makeRing } from "./entities/ring";
+import { makeSonic } from "./entities/sonic";
+import k from "./kaplayCtx";
 
-const k = kaplay({
-  width: 1920,
-  height: 1080,
-  letterbox: true,
-  background: [0, 0, 0],
-});
-
-k.loadSprite("greenhill-bg", "graphics/greenhill-bg.png");
 k.loadSprite("chemical-bg", "graphics/chemical-bg.png");
 k.loadSprite("platforms", "graphics/platforms.png");
 k.loadSprite("sonic", "graphics/sonic.png", {
@@ -16,6 +10,13 @@ k.loadSprite("sonic", "graphics/sonic.png", {
   anims: {
     run: { from: 0, to: 7, loop: true, speed: 30 },
     jump: { from: 8, to: 15, loop: true, speed: 100 },
+  },
+});
+k.loadSprite("ring", "graphics/ring.png", {
+  sliceX: 16,
+  sliceY: 1,
+  anims: {
+    spin: { from: 0, to: 15, loop: true, speed: 30 },
   },
 });
 
@@ -32,33 +33,18 @@ k.scene("game", () => {
     k.add([k.sprite("platforms"), k.pos(384, 450), k.scale(4)]),
   ];
 
-  const sonic = k.add([
-    k.sprite("sonic", { anim: "run" }),
-    k.scale(4),
-    k.area(),
-    k.anchor("center"),
-    k.pos(200, 745),
-    k.body({ jumpForce: 1700 }),
-    {
-      setControls() {
-        k.onKeyPress("space", () => {
-          if (this.isGrounded()) {
-            this.play("jump");
-            this.jump();
-          }
-        });
-      },
-      setEvents() {
-        this.onGround(() => {
-          this.play("run");
-        });
-      },
-    },
-  ]);
+  const sonic = makeSonic(k.vec2(200, 745));
   sonic.setControls();
   sonic.setEvents();
 
-  const platformHitbox = k.add([
+  k.loop(1, () => {
+    const ring = makeRing(k.vec2(1920, 745), 4000);
+    ring.onExitScreen(() => {
+      if (ring.pos.x < 0) k.destroy(ring);
+    });
+  });
+
+  k.add([
     k.rect(1920, 300),
     k.opacity(0),
     k.area(),
