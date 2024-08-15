@@ -21,9 +21,11 @@ k.loadSprite("sonic", "graphics/sonic.png", {
 
 k.scene("game", () => {
   k.setGravity(3000);
-  const bgLeft = k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2)]);
-  const bgRight = k.add([k.sprite("chemical-bg"), k.pos(1920, 0), k.scale(2)]);
-  const bgPieces = [bgLeft, bgRight];
+  const bgPieceWidth = 1920;
+  const bgPieces = [
+    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2)]),
+    k.add([k.sprite("chemical-bg"), k.pos(1920, 0), k.scale(2)]),
+  ];
 
   const platforms = [
     k.add([
@@ -79,15 +81,17 @@ k.scene("game", () => {
   ]);
 
   k.onUpdate(() => {
-    for (const bgPiece of bgPieces) {
-      bgPiece.moveTo(bgPiece.pos.x, -sonic.pos.y / 10 - 50);
-      if (bgPiece.pos.x < -3840) {
-        bgPieces.push(bgPieces.shift());
-        bgPiece.moveTo(3840, 0);
-      }
+    if (bgPieces[1].pos.x < 0) {
+      bgPieces[0].moveTo(bgPieces[1].pos.x + bgPieceWidth * 2, 0);
+      bgPieces.push(bgPieces.shift());
     }
+
     bgPieces[0].move(-100, 0);
-    bgPieces[1].moveTo(bgPieces[0].pos.x + 3840, 0);
+    bgPieces[1].moveTo(bgPieces[0].pos.x + bgPieceWidth * 2, 0);
+
+    // for jump effect
+    bgPieces[0].moveTo(bgPieces[0].pos.x, -sonic.pos.y / 10 - 50);
+    bgPieces[1].moveTo(bgPieces[1].pos.x, -sonic.pos.y / 10 - 50);
 
     for (const platform of platforms) {
       if (platform.pos.x < -1920) {
