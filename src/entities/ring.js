@@ -9,5 +9,6 @@ export function makeRing(pos, speed) {
     k.move(k.vec2(-1, 0), speed),
     k.pos(pos),
     k.offscreen(),
+    "ring",
   ]);
 }

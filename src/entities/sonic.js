@@ -21,6 +21,17 @@ export function makeSonic(pos) {
         this.onGround(() => {
           this.play("run");
         });
+
+        this.onCollide("motobug", (motobug) => {
+          if (!this.isGrounded()) {
+            k.destroy(motobug);
+            this.play("jump");
+            this.jump();
+            return;
+          }
+
+          k.go("gameover");
+        });
       },
     },
   ]);

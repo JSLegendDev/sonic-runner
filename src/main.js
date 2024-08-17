@@ -32,8 +32,13 @@ k.scene("game", () => {
   k.setGravity(3000);
   const bgPieceWidth = 1920;
   const bgPieces = [
-    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2)]),
-    k.add([k.sprite("chemical-bg"), k.pos(1920, 0), k.scale(2)]),
+    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.7)]),
+    k.add([
+      k.sprite("chemical-bg"),
+      k.pos(1920, 0),
+      k.scale(2),
+      k.opacity(0.7),
+    ]),
   ];
 
   const platforms = [
@@ -45,10 +50,32 @@ k.scene("game", () => {
   sonic.setControls();
   sonic.setEvents();
 
-  makeMotobug(k.vec2(400, 700));
+  let score = 0;
+  sonic.onCollide("ring", (ring) => {
+    k.destroy(ring);
+    score++;
+  });
+
+  let gameSpeed = 300;
+  k.loop(1, () => {
+    gameSpeed += 50;
+  });
+
+  const spawnMotoBug = () => {
+    const motobug = makeMotobug(k.vec2(2000, 773), gameSpeed + 300);
+    motobug.onExitScreen(() => {
+      if (motobug.pos.x < 0) k.destroy(motobug);
+    });
+
+    const waitTime = k.rand(1, 4);
+
+    k.wait(waitTime, spawnMotoBug);
+  };
+
+  spawnMotoBug();
 
   k.loop(1, () => {
-    const ring = makeRing(k.vec2(1920, 745), 4000);
+    const ring = makeRing(k.vec2(2000, 745), gameSpeed);
     ring.onExitScreen(() => {
       if (ring.pos.x < 0) k.destroy(ring);
     });
@@ -81,9 +108,13 @@ k.scene("game", () => {
       platforms.push(platforms.shift());
     }
 
-    platforms[0].move(-4000, 0);
+    platforms[0].move(-gameSpeed, 0);
     platforms[1].moveTo(platforms[0].pos.x + platforms[1].width * 4, 450);
   });
+});
+
+k.scene("gameover", () => {
+  k.onKeyPress("space", () => k.go("game"));
 });
 
 k.go("game");
