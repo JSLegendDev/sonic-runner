@@ -27,17 +27,18 @@ k.loadSprite("motobug", "graphics/motobug.png", {
     run: { from: 0, to: 4, loop: true, speed: 8 },
   },
 });
+k.loadFont("mania", "fonts/mania.ttf");
 
 k.scene("game", () => {
   k.setGravity(3000);
   const bgPieceWidth = 1920;
   const bgPieces = [
-    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.7)]),
+    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.9)]),
     k.add([
       k.sprite("chemical-bg"),
       k.pos(1920, 0),
       k.scale(2),
-      k.opacity(0.7),
+      k.opacity(0.9),
     ]),
   ];
 
@@ -50,10 +51,25 @@ k.scene("game", () => {
   sonic.setControls();
   sonic.setEvents();
 
+  const scoreText = k.add([
+    k.text("SCORE : 0", { font: "mania" }),
+    k.pos(10, 10),
+  ]);
   let score = 0;
   sonic.onCollide("ring", (ring) => {
     k.destroy(ring);
     score++;
+    scoreText.text = `SCORE : ${score}`;
+  });
+  sonic.onCollide("motobug", (motobug) => {
+    if (!sonic.isGrounded()) {
+      k.destroy(motobug);
+      sonic.play("jump");
+      sonic.jump();
+      return;
+    }
+
+    k.go("gameover");
   });
 
   let gameSpeed = 300;
@@ -67,7 +83,7 @@ k.scene("game", () => {
       if (motobug.pos.x < 0) k.destroy(motobug);
     });
 
-    const waitTime = k.rand(1, 4);
+    const waitTime = k.rand(0.5, 4);
 
     k.wait(waitTime, spawnMotoBug);
   };
