@@ -1,3 +1,4 @@
+import { makeMotobug } from "./entities/motobug";
 import { makeRing } from "./entities/ring";
 import { makeSonic } from "./entities/sonic";
 import k from "./kaplayCtx";
@@ -19,6 +20,13 @@ k.loadSprite("ring", "graphics/ring.png", {
     spin: { from: 0, to: 15, loop: true, speed: 30 },
   },
 });
+k.loadSprite("motobug", "graphics/motobug.png", {
+  sliceX: 5,
+  sliceY: 1,
+  anims: {
+    run: { from: 0, to: 4, loop: true, speed: 8 },
+  },
+});
 
 k.scene("game", () => {
   k.setGravity(3000);
@@ -36,6 +44,8 @@ k.scene("game", () => {
   const sonic = makeSonic(k.vec2(200, 745));
   sonic.setControls();
   sonic.setEvents();
+
+  makeMotobug(k.vec2(400, 700));
 
   k.loop(1, () => {
     const ring = makeRing(k.vec2(1920, 745), 4000);
