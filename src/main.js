@@ -29,8 +29,13 @@ k.loadSprite("motobug", "graphics/motobug.png", {
 });
 k.loadFont("mania", "fonts/mania.ttf");
 
+k.scene("main-menu", () => {
+  if (!k.getData("best-score")) k.setData("best-score", 0);
+  k.onKeyPress("space", () => k.go("game"));
+});
+
 k.scene("game", () => {
-  k.setGravity(3000);
+  k.setGravity(3100);
   const bgPieceWidth = 1920;
   const bgPieces = [
     k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.8)]),
@@ -71,7 +76,7 @@ k.scene("game", () => {
       return;
     }
 
-    k.setData("final-score", score);
+    k.setData("current-score", score);
     k.go("gameover");
   });
 
@@ -87,7 +92,7 @@ k.scene("game", () => {
         motobug.move(-(gameSpeed + 300), 0);
         return;
       }
-      motobug.move(-gameSpeed / 2, 0);
+      motobug.move(-gameSpeed, 0);
     });
 
     motobug.onExitScreen(() => {
@@ -101,19 +106,21 @@ k.scene("game", () => {
 
   spawnMotoBug();
 
-  k.loop(1, () => {
-    const ring = makeRing(k.vec2(2000, 745));
+  const spawnRing = () => {
+    const ring = makeRing(k.vec2(1950, 745));
     ring.onUpdate(() => {
-      if (gameSpeed < 3000) {
-        ring.move(-gameSpeed, 0);
-        return;
-      }
-      ring.move(-gameSpeed / 2, 0);
+      ring.move(-gameSpeed, 0);
     });
     ring.onExitScreen(() => {
       if (ring.pos.x < 0) k.destroy(ring);
     });
-  });
+
+    const waitTime = k.rand(0.5, 4);
+
+    k.wait(waitTime, spawnRing);
+  };
+
+  spawnRing();
 
   k.add([
     k.rect(1920, 300),
@@ -148,13 +155,21 @@ k.scene("game", () => {
 });
 
 k.scene("gameover", () => {
+  let bestScore = k.getData("best-score");
+  const currentScore = k.getData("current-score");
+
+  if (bestScore < currentScore) {
+    k.setData("best-score", currentScore);
+    bestScore = currentScore;
+  }
+
   k.add([
     k.text("GAME OVER", { font: "mania", size: 96 }),
     k.anchor("center"),
     k.pos(k.center().x, k.center().y - 200),
   ]);
   k.add([
-    k.text(`BEST SCORE : ${k.getData("final-score")}`, {
+    k.text(`BEST SCORE : ${bestScore}`, {
       font: "mania",
       size: 64,
     }),
@@ -162,7 +177,7 @@ k.scene("gameover", () => {
     k.pos(k.center().x - 400, k.center().y),
   ]);
   k.add([
-    k.text(`CURRENT SCORE : ${k.getData("final-score")}`, {
+    k.text(`CURRENT SCORE : ${currentScore}`, {
       font: "mania",
       size: 64,
     }),
@@ -173,4 +188,4 @@ k.scene("gameover", () => {
   k.wait(1, () => k.onKeyPress("space", () => k.go("game")));
 });
 
-k.go("game");
+k.go("main-menu");
