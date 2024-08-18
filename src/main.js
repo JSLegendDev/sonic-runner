@@ -33,12 +33,12 @@ k.scene("game", () => {
   k.setGravity(3000);
   const bgPieceWidth = 1920;
   const bgPieces = [
-    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.9)]),
+    k.add([k.sprite("chemical-bg"), k.pos(0, 0), k.scale(2), k.opacity(0.8)]),
     k.add([
       k.sprite("chemical-bg"),
       k.pos(1920, 0),
       k.scale(2),
-      k.opacity(0.9),
+      k.opacity(0.8),
     ]),
   ];
 
@@ -52,8 +52,8 @@ k.scene("game", () => {
   sonic.setEvents();
 
   const scoreText = k.add([
-    k.text("SCORE : 0", { font: "mania" }),
-    k.pos(10, 10),
+    k.text("SCORE : 0", { font: "mania", size: 64 }),
+    k.pos(20, 20),
   ]);
   let score = 0;
   sonic.onCollide("ring", (ring) => {
@@ -66,9 +66,12 @@ k.scene("game", () => {
       k.destroy(motobug);
       sonic.play("jump");
       sonic.jump();
+      score += 10;
+      scoreText.text = `SCORE : ${score}`;
       return;
     }
 
+    k.setData("final-score", score);
     k.go("gameover");
   });
 
@@ -78,7 +81,15 @@ k.scene("game", () => {
   });
 
   const spawnMotoBug = () => {
-    const motobug = makeMotobug(k.vec2(2000, 773), gameSpeed + 300);
+    const motobug = makeMotobug(k.vec2(1950, 773), gameSpeed + 300);
+    motobug.onUpdate(() => {
+      if (gameSpeed < 3000) {
+        motobug.move(-(gameSpeed + 300), 0);
+        return;
+      }
+      motobug.move(-gameSpeed / 2, 0);
+    });
+
     motobug.onExitScreen(() => {
       if (motobug.pos.x < 0) k.destroy(motobug);
     });
@@ -91,7 +102,14 @@ k.scene("game", () => {
   spawnMotoBug();
 
   k.loop(1, () => {
-    const ring = makeRing(k.vec2(2000, 745), gameSpeed);
+    const ring = makeRing(k.vec2(2000, 745));
+    ring.onUpdate(() => {
+      if (gameSpeed < 3000) {
+        ring.move(-gameSpeed, 0);
+        return;
+      }
+      ring.move(-gameSpeed / 2, 0);
+    });
     ring.onExitScreen(() => {
       if (ring.pos.x < 0) k.destroy(ring);
     });
@@ -130,7 +148,29 @@ k.scene("game", () => {
 });
 
 k.scene("gameover", () => {
-  k.onKeyPress("space", () => k.go("game"));
+  k.add([
+    k.text("GAME OVER", { font: "mania", size: 96 }),
+    k.anchor("center"),
+    k.pos(k.center().x, k.center().y - 200),
+  ]);
+  k.add([
+    k.text(`BEST SCORE : ${k.getData("final-score")}`, {
+      font: "mania",
+      size: 64,
+    }),
+    k.anchor("center"),
+    k.pos(k.center().x - 400, k.center().y),
+  ]);
+  k.add([
+    k.text(`CURRENT SCORE : ${k.getData("final-score")}`, {
+      font: "mania",
+      size: 64,
+    }),
+    k.anchor("center"),
+    k.pos(k.center().x + 400, k.center().y),
+  ]);
+
+  k.wait(1, () => k.onKeyPress("space", () => k.go("game")));
 });
 
 k.go("game");
