@@ -1,4 +1,3 @@
-import { makeBuzzBomber } from "./entities/buzzbomber";
 import { makeMotobug } from "./entities/motobug";
 import { makeRing } from "./entities/ring";
 import { makeSonic } from "./entities/sonic";
@@ -26,13 +25,6 @@ k.loadSprite("motobug", "graphics/motobug.png", {
   sliceY: 1,
   anims: {
     run: { from: 0, to: 4, loop: true, speed: 8 },
-  },
-});
-k.loadSprite("buzzbomber", "graphics/buzzbomber.png", {
-  sliceX: 3,
-  sliceY: 1,
-  anims: {
-    fly: { from: 0, to: 2, loop: true, speed: 6 },
   },
 });
 k.loadFont("mania", "fonts/mania.ttf");
@@ -92,27 +84,6 @@ k.scene("game", () => {
   k.loop(1, () => {
     gameSpeed += 50;
   });
-
-  const spawnBuzzBomber = () => {
-    const buzzbomber = makeBuzzBomber(k.vec2(1940, 700));
-    buzzbomber.onUpdate(() => {
-      if (gameSpeed < 3000) {
-        buzzbomber.move(-(gameSpeed + 1000), 0);
-        return;
-      }
-      buzzbomber.move(-gameSpeed, 0);
-    });
-
-    buzzbomber.onExitScreen(() => {
-      if (buzzbomber.pos.x < 0) k.destroy(buzzbomber);
-    });
-
-    const waitTime = k.rand(4, 8);
-
-    k.wait(waitTime, spawnBuzzBomber);
-  };
-
-  spawnBuzzBomber();
 
   const spawnMotoBug = () => {
     const motobug = makeMotobug(k.vec2(1950, 773));
@@ -187,6 +158,21 @@ k.scene("gameover", () => {
   let bestScore = k.getData("best-score");
   const currentScore = k.getData("current-score");
 
+  const rankGrades = ["F", "E", "D", "C", "B", "A", "S"];
+  const rankValues = [50, 80, 100, 200, 300, 400, 500];
+
+  let currentRank = "F";
+  let bestRank = "F";
+  for (let i = 0; i < rankValues.length; i++) {
+    if (rankValues[i] < currentScore) {
+      currentRank = rankGrades[i];
+    }
+
+    if (rankValues[i] < bestScore) {
+      bestRank = rankGrades[i];
+    }
+  }
+
   if (bestScore < currentScore) {
     k.setData("best-score", currentScore);
     bestScore = currentScore;
@@ -212,6 +198,34 @@ k.scene("gameover", () => {
     }),
     k.anchor("center"),
     k.pos(k.center().x + 400, k.center().y),
+  ]);
+
+  const bestRankBox = k.add([
+    k.rect(400, 400, { radius: 4 }),
+    k.color(0, 0, 0),
+    k.area(),
+    k.anchor("center"),
+    k.outline(6, k.Color.fromArray([255, 255, 255])),
+    k.pos(k.center().x - 400, k.center().y + 250),
+  ]);
+
+  bestRankBox.add([
+    k.text(bestRank, { font: "mania", size: 128 }),
+    k.anchor("center"),
+  ]);
+
+  const currentRankBox = k.add([
+    k.rect(400, 400, { radius: 4 }),
+    k.color(0, 0, 0),
+    k.area(),
+    k.anchor("center"),
+    k.outline(6, k.Color.fromArray([255, 255, 255])),
+    k.pos(k.center().x + 400, k.center().y + 250),
+  ]);
+
+  currentRankBox.add([
+    k.text(currentRank, { font: "mania", size: 128 }),
+    k.anchor("center"),
   ]);
 
   k.wait(1, () => k.onKeyPress("space", () => k.go("game")));
