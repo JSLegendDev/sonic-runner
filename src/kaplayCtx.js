@@ -6,6 +6,13 @@ const k = kaplay({
   letterbox: true,
   background: [0, 0, 0],
   global: false,
+  buttons: {
+    jump: {
+      keyboard: ["space"],
+      mouse: "left",
+    },
+  },
+  touchToMouse: true,
 });
 
 export default k;

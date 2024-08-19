@@ -10,7 +10,7 @@ export function makeSonic(pos) {
     k.body({ jumpForce: 1700 }),
     {
       setControls() {
-        k.onKeyPress("space", () => {
+        k.onButtonPress("jump", () => {
           if (this.isGrounded()) {
             this.play("jump");
             this.jump();
