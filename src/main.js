@@ -143,8 +143,9 @@ k.scene("game", () => {
     k.pos(k.center()),
   ]);
 
-  k.wait(3, () => {
+  const dimissControlsText = k.onButtonPress("jump", () => {
     k.destroy(controlsText);
+    dimissControlsText.cancel();
   });
 
   const scoreText = k.add([
