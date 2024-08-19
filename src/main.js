@@ -189,7 +189,7 @@ k.scene("gameover", () => {
       size: 64,
     }),
     k.anchor("center"),
-    k.pos(k.center().x - 400, k.center().y),
+    k.pos(k.center().x - 400, k.center().y - 80),
   ]);
   k.add([
     k.text(`CURRENT SCORE : ${currentScore}`, {
@@ -197,7 +197,7 @@ k.scene("gameover", () => {
       size: 64,
     }),
     k.anchor("center"),
-    k.pos(k.center().x + 400, k.center().y),
+    k.pos(k.center().x + 400, k.center().y - 80),
   ]);
 
   const bestRankBox = k.add([
@@ -206,11 +206,11 @@ k.scene("gameover", () => {
     k.area(),
     k.anchor("center"),
     k.outline(6, k.Color.fromArray([255, 255, 255])),
-    k.pos(k.center().x - 400, k.center().y + 250),
+    k.pos(k.center().x - 400, k.center().y + 200),
   ]);
 
   bestRankBox.add([
-    k.text(bestRank, { font: "mania", size: 128 }),
+    k.text(bestRank, { font: "mania", size: 100 }),
     k.anchor("center"),
   ]);
 
@@ -220,11 +220,11 @@ k.scene("gameover", () => {
     k.area(),
     k.anchor("center"),
     k.outline(6, k.Color.fromArray([255, 255, 255])),
-    k.pos(k.center().x + 400, k.center().y + 250),
+    k.pos(k.center().x + 400, k.center().y + 200),
   ]);
 
   currentRankBox.add([
-    k.text(currentRank, { font: "mania", size: 128 }),
+    k.text(currentRank, { font: "mania", size: 100 }),
     k.anchor("center"),
   ]);
 
