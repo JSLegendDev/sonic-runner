@@ -13,6 +13,7 @@ const k = kaplay({
     },
   },
   touchToMouse: true,
+  debug: false,
 });
 
 export default k;
