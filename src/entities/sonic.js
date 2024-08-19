@@ -1,7 +1,7 @@
 import k from "../kaplayCtx";
 
 export function makeSonic(pos) {
-  return k.add([
+  const sonic = k.add([
     k.sprite("sonic", { anim: "run" }),
     k.scale(4),
     k.area(),
@@ -9,6 +9,7 @@ export function makeSonic(pos) {
     k.pos(pos),
     k.body({ jumpForce: 1700 }),
     {
+      ringCollectUI: null,
       setControls() {
         k.onButtonPress("jump", () => {
           if (this.isGrounded()) {
@@ -24,4 +25,13 @@ export function makeSonic(pos) {
       },
     },
   ]);
+
+  sonic.ringCollectUI = sonic.add([
+    k.text("", { font: "mania", size: 24 }),
+    k.color(255, 255, 0),
+    k.anchor("center"),
+    k.pos(30, -10),
+  ]);
+
+  return sonic;
 }

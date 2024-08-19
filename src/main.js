@@ -57,22 +57,34 @@ k.scene("game", () => {
   sonic.setEvents();
 
   const scoreText = k.add([
-    k.text("SCORE : 0", { font: "mania", size: 64 }),
+    k.text("SCORE : 0", { font: "mania", size: 72 }),
     k.pos(20, 20),
   ]);
   let score = 0;
+  let scoreMultiplier = 0;
   sonic.onCollide("ring", (ring) => {
     k.destroy(ring);
     score++;
     scoreText.text = `SCORE : ${score}`;
+    sonic.ringCollectUI.text = "+1";
+    k.wait(1, () => {
+      sonic.ringCollectUI.text = "";
+    });
   });
   sonic.onCollide("enemy", (enemy) => {
     if (!sonic.isGrounded()) {
       k.destroy(enemy);
       sonic.play("jump");
       sonic.jump();
-      score += 10;
+      scoreMultiplier += 1;
+      score += 10 * scoreMultiplier;
       scoreText.text = `SCORE : ${score}`;
+      if (scoreMultiplier === 1)
+        sonic.ringCollectUI.text = `+${10 * scoreMultiplier}`;
+      if (scoreMultiplier > 1) sonic.ringCollectUI.text = `x${scoreMultiplier}`;
+      k.wait(1, () => {
+        sonic.ringCollectUI.text = "";
+      });
       return;
     }
 
@@ -99,7 +111,7 @@ k.scene("game", () => {
       if (motobug.pos.x < 0) k.destroy(motobug);
     });
 
-    const waitTime = k.rand(0.5, 4);
+    const waitTime = k.rand(0.5, 2.5);
 
     k.wait(waitTime, spawnMotoBug);
   };
@@ -115,7 +127,7 @@ k.scene("game", () => {
       if (ring.pos.x < 0) k.destroy(ring);
     });
 
-    const waitTime = k.rand(0.5, 4);
+    const waitTime = k.rand(0.5, 3);
 
     k.wait(waitTime, spawnRing);
   };
@@ -132,6 +144,8 @@ k.scene("game", () => {
   ]);
 
   k.onUpdate(() => {
+    if (sonic.isGrounded()) scoreMultiplier = 0;
+
     if (bgPieces[1].pos.x < 0) {
       bgPieces[0].moveTo(bgPieces[1].pos.x + bgPieceWidth * 2, 0);
       bgPieces.push(bgPieces.shift());
