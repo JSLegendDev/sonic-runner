@@ -29,9 +29,31 @@ k.loadSprite("motobug", "graphics/motobug.png", {
 });
 k.loadFont("mania", "fonts/mania.ttf");
 
+k.scene("disclaimer", () => {
+  k.add([
+    k.text(
+      `
+    Sonic is owned by SEGA.
+    This is a fangame made by JSLegendDev using assets from Sonic Mania
+  `,
+      { font: "mania", size: 32 }
+    ),
+  ]);
+
+  k.add([
+    k.text("Press Space/Click/Touch to start the game", {
+      font: "mania",
+      size: 32,
+    }),
+    k.pos(60, 300),
+  ]);
+
+  k.onButtonPress("jump", () => k.go("main-menu"));
+});
+
 k.scene("main-menu", () => {
   if (!k.getData("best-score")) k.setData("best-score", 0);
-  k.onKeyPress("space", () => k.go("game"));
+  k.onButtonPress("jump", () => k.go("game"));
 });
 
 k.scene("game", () => {
@@ -195,7 +217,7 @@ k.scene("gameover", () => {
   k.add([
     k.text("GAME OVER", { font: "mania", size: 96 }),
     k.anchor("center"),
-    k.pos(k.center().x, k.center().y - 200),
+    k.pos(k.center().x, k.center().y - 300),
   ]);
   k.add([
     k.text(`BEST SCORE : ${bestScore}`, {
@@ -203,7 +225,7 @@ k.scene("gameover", () => {
       size: 64,
     }),
     k.anchor("center"),
-    k.pos(k.center().x - 400, k.center().y - 80),
+    k.pos(k.center().x - 400, k.center().y - 200),
   ]);
   k.add([
     k.text(`CURRENT SCORE : ${currentScore}`, {
@@ -211,7 +233,7 @@ k.scene("gameover", () => {
       size: 64,
     }),
     k.anchor("center"),
-    k.pos(k.center().x + 400, k.center().y - 80),
+    k.pos(k.center().x + 400, k.center().y - 200),
   ]);
 
   const bestRankBox = k.add([
@@ -220,7 +242,7 @@ k.scene("gameover", () => {
     k.area(),
     k.anchor("center"),
     k.outline(6, k.Color.fromArray([255, 255, 255])),
-    k.pos(k.center().x - 400, k.center().y + 200),
+    k.pos(k.center().x - 400, k.center().y + 50),
   ]);
 
   bestRankBox.add([
@@ -234,7 +256,7 @@ k.scene("gameover", () => {
     k.area(),
     k.anchor("center"),
     k.outline(6, k.Color.fromArray([255, 255, 255])),
-    k.pos(k.center().x + 400, k.center().y + 200),
+    k.pos(k.center().x + 400, k.center().y + 50),
   ]);
 
   currentRankBox.add([
@@ -249,10 +271,10 @@ k.scene("gameover", () => {
         size: 64,
       }),
       k.anchor("center"),
-      k.pos(k.center().x, k.center().y + 500),
+      k.pos(k.center().x, k.center().y + 350),
     ]);
     k.onButtonPress("jump", () => k.go("game"));
   });
 });
 
-k.go("main-menu");
+k.go("disclaimer");
