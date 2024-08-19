@@ -15,6 +15,7 @@ export function makeSonic(pos) {
           if (this.isGrounded()) {
             this.play("jump");
             this.jump();
+            k.play("jump", { volume: 0.5 });
           }
         });
       },

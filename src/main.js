@@ -28,6 +28,12 @@ k.loadSprite("motobug", "graphics/motobug.png", {
   },
 });
 k.loadFont("mania", "fonts/mania.ttf");
+k.loadSound("destroy", "sounds/Destroy.wav");
+k.loadSound("hurt", "sounds/Hurt.wav");
+k.loadSound("hyper-ring", "sounds/HyperRing.wav");
+k.loadSound("jump", "sounds/Jump.wav");
+k.loadSound("ring", "sounds/Ring.wav");
+k.loadSound("city", "sounds/city.mp3");
 
 k.scene("disclaimer", () => {
   k.add([
@@ -106,6 +112,7 @@ k.scene("main-menu", () => {
 });
 
 k.scene("game", () => {
+  const citySfx = k.play("city", { volume: 0.2, loop: true });
   k.setGravity(3100);
   const bgPieceWidth = 1920;
   const bgPieces = [
@@ -147,6 +154,7 @@ k.scene("game", () => {
   let score = 0;
   let scoreMultiplier = 0;
   sonic.onCollide("ring", (ring) => {
+    k.play("ring", { volume: 0.5 });
     k.destroy(ring);
     score++;
     scoreText.text = `SCORE : ${score}`;
@@ -157,6 +165,8 @@ k.scene("game", () => {
   });
   sonic.onCollide("enemy", (enemy) => {
     if (!sonic.isGrounded()) {
+      k.play("destroy", { volume: 0.5 });
+      k.play("hyper-ring", { volume: 0.5 });
       k.destroy(enemy);
       sonic.play("jump");
       sonic.jump();
@@ -172,8 +182,9 @@ k.scene("game", () => {
       return;
     }
 
+    k.play("hurt", { volume: 0.5 });
     k.setData("current-score", score);
-    k.go("gameover");
+    k.go("gameover", citySfx);
   });
 
   let gameSpeed = 300;
@@ -252,7 +263,8 @@ k.scene("game", () => {
   });
 });
 
-k.scene("gameover", () => {
+k.scene("gameover", (citySfx) => {
+  citySfx.paused = true;
   let bestScore = k.getData("best-score");
   const currentScore = k.getData("current-score");
 
