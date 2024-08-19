@@ -1,3 +1,4 @@
+import { makeBuzzBomber } from "./entities/buzzbomber";
 import { makeMotobug } from "./entities/motobug";
 import { makeRing } from "./entities/ring";
 import { makeSonic } from "./entities/sonic";
@@ -25,6 +26,13 @@ k.loadSprite("motobug", "graphics/motobug.png", {
   sliceY: 1,
   anims: {
     run: { from: 0, to: 4, loop: true, speed: 8 },
+  },
+});
+k.loadSprite("buzzbomber", "graphics/buzzbomber.png", {
+  sliceX: 3,
+  sliceY: 1,
+  anims: {
+    fly: { from: 0, to: 2, loop: true, speed: 6 },
   },
 });
 k.loadFont("mania", "fonts/mania.ttf");
@@ -66,9 +74,9 @@ k.scene("game", () => {
     score++;
     scoreText.text = `SCORE : ${score}`;
   });
-  sonic.onCollide("motobug", (motobug) => {
+  sonic.onCollide("enemy", (enemy) => {
     if (!sonic.isGrounded()) {
-      k.destroy(motobug);
+      k.destroy(enemy);
       sonic.play("jump");
       sonic.jump();
       score += 10;
@@ -85,8 +93,29 @@ k.scene("game", () => {
     gameSpeed += 50;
   });
 
+  const spawnBuzzBomber = () => {
+    const buzzbomber = makeBuzzBomber(k.vec2(1940, 700));
+    buzzbomber.onUpdate(() => {
+      if (gameSpeed < 3000) {
+        buzzbomber.move(-(gameSpeed + 1000), 0);
+        return;
+      }
+      buzzbomber.move(-gameSpeed, 0);
+    });
+
+    buzzbomber.onExitScreen(() => {
+      if (buzzbomber.pos.x < 0) k.destroy(buzzbomber);
+    });
+
+    const waitTime = k.rand(4, 8);
+
+    k.wait(waitTime, spawnBuzzBomber);
+  };
+
+  spawnBuzzBomber();
+
   const spawnMotoBug = () => {
-    const motobug = makeMotobug(k.vec2(1950, 773), gameSpeed + 300);
+    const motobug = makeMotobug(k.vec2(1950, 773));
     motobug.onUpdate(() => {
       if (gameSpeed < 3000) {
         motobug.move(-(gameSpeed + 300), 0);
