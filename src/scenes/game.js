@@ -35,9 +35,9 @@ export default function game() {
     k.pos(k.center()),
   ]);
 
-  const dimissControlsText = k.onButtonPress("jump", () => {
+  const dismissControlsAction = k.onButtonPress("jump", () => {
     k.destroy(controlsText);
-    dimissControlsText.cancel();
+    dismissControlsAction.cancel();
   });
 
   const scoreText = k.add([
